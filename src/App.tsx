@@ -1,8 +1,9 @@
 import { useState, useCallback, useRef } from 'react'
 import { getCurrentWindow } from '@tauri-apps/api/window'
-import { save } from '@tauri-apps/plugin-dialog'
-import { writeTextFile } from '@tauri-apps/plugin-fs'
+import { save, open } from '@tauri-apps/plugin-dialog'
+import { writeTextFile, readTextFile } from '@tauri-apps/plugin-fs'
 import { useStore } from './hooks/useStore'
+import { replaceStore } from './lib/store'
 import TitleBar from './components/TitleBar'
 import ClockCanvas from './components/ClockCanvas'
 import DaySelector from './components/DaySelector'
@@ -34,11 +35,14 @@ export default function App() {
     removeBlock,
     selectBlock,
     clearAllBlocks,
+    setStore,
   } = useStore()
 
   const [panelWidth, setPanelWidth] = useState(320)
   const [exported, setExported] = useState(false)
   const [confirmClear, setConfirmClear] = useState(false)
+  const [confirmImport, setConfirmImport] = useState(false)
+  const [importData, setImportData] = useState<string | null>(null)
   const resizing = useRef(false)
 
   const handleCreateBlock = (startHour: number, endHour: number) => {
@@ -166,6 +170,52 @@ export default function App() {
             >
               {exported ? 'EXPORTED!' : 'EXPORT JSON'}
             </Button>
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={async () => {
+                try {
+                  const path = await open({
+                    filters: [{ name: 'JSON', extensions: ['json'] }],
+                    multiple: false,
+                  })
+                  if (!path) return
+                  const content = await readTextFile(path)
+                  const parsed = JSON.parse(content)
+                  setImportData(parsed)
+                  setConfirmImport(true)
+                } catch {
+                  toast('Import failed: invalid file')
+                }
+              }}
+            >
+              IMPORT JSON
+            </Button>
+            <Dialog open={confirmImport} onOpenChange={setConfirmImport}>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Import schedule?</DialogTitle>
+                  <DialogDescription>
+                    This will replace your current schedule with the imported one. This cannot be undone.
+                  </DialogDescription>
+                </DialogHeader>
+                <DialogFooter>
+                  <Button variant="secondary" size="sm" onClick={() => setConfirmImport(false)}>
+                    Cancel
+                  </Button>
+                  <Button variant="destructive" size="sm" onClick={() => {
+                    if (importData) {
+                      setStore(replaceStore(importData))
+                      toast('Schedule imported')
+                    }
+                    setConfirmImport(false)
+                    setImportData(null)
+                  }}>
+                    Import
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
           </div>
 
           <DaySelector

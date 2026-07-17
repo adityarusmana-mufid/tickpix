@@ -133,3 +133,7 @@ export function removeBlockInDays(store: Store, id: string, dayIndexes: number[]
 export function getBlocksForDay(store: Store, dayOfWeek: number): Block[] {
   return store.blocks.filter((b) => b.dayOfWeek === dayOfWeek)
 }
+
+export function replaceStore(raw: unknown): Store {
+  return migrateStore(raw as Store)
+}

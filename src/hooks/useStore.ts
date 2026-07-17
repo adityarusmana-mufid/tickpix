@@ -82,6 +82,7 @@ export function useStore() {
 
   return {
     store,
+    setStore,
     setViewMode,
     toggleDay,
     addActivity: handleAddActivity,
