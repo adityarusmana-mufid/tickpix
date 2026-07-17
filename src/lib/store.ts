@@ -4,10 +4,10 @@ const STORAGE_KEY = 'tickpix-store'
 
 const defaultActivities: Activity[] = [
   { id: 'sleep', name: 'Sleep', color: '#6b5b95' },
-  { id: 'work', name: 'Work', color: '#feb236' },
-  { id: 'eat', name: 'Eat', color: '#d64161' },
-  { id: 'exercise', name: 'Exercise', color: '#7ebd7e' },
-  { id: 'leisure', name: 'Leisure', color: '#3fb0ac' },
+  { id: 'work', name: 'Work', color: '#1d2b53' },
+  { id: 'eat', name: 'Eat', color: '#7e2553' },
+  { id: 'exercise', name: 'Exercise', color: '#008751' },
+  { id: 'leisure', name: 'Leisure', color: '#ab5236' },
 ]
 
 function newId(): string {
