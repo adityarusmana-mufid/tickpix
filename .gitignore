@@ -24,5 +24,8 @@ dist-ssr
 *.sln
 *.sw?
 
+# Export files
+tickpix-schedule*.json
+
 # Tauri
 src-tauri/target/
