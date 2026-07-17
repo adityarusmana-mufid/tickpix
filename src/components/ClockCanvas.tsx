@@ -164,6 +164,10 @@ export default function ClockCanvas({
 
   const dayBlocks = blocks.filter((b) => selectedDayIndexes.includes(b.dayOfWeek))
 
+  const dayLabel = selectedDayIndexes.length === 1
+    ? FULL_DAYS[selectedDayIndexes[0]]
+    : selectedDayIndexes.map(i => SHORT_DAYS[i]).join(', ')
+
   const getActivity = useCallback(
     (activityId: string | null) => activities.find((a) => a.id === activityId),
     [activities]
@@ -190,15 +194,6 @@ export default function ClockCanvas({
     const midR = (innerR + outerR) / 2
 
     ctx.clearRect(0, 0, w, h)
-
-    const label = selectedDayIndexes.length === 1
-      ? FULL_DAYS[selectedDayIndexes[0]]
-      : selectedDayIndexes.map(i => SHORT_DAYS[i]).join(', ')
-    ctx.fillStyle = '#3a3028'
-    ctx.font = '10px "Press Start 2P", monospace'
-    ctx.textAlign = 'center'
-    ctx.textBaseline = 'top'
-    ctx.fillText(label, cx, PS * 2)
 
     // Draw pixel ring (background track)
     drawPixelRing(ctx, cx, cy, outerR, outerR + PS * 2, '#835a4d')
@@ -358,6 +353,9 @@ export default function ClockCanvas({
 
   return (
     <div className="flex-1 relative min-h-0">
+      <div className="absolute top-2 left-1/2 -translate-x-1/2 z-10">
+        <Badge variant="default">{dayLabel}</Badge>
+      </div>
       <canvas
         ref={canvasRef}
         className={`absolute inset-0 w-full h-full ${viewMode === 'edit' ? 'cursor-crosshair' : 'cursor-default'}`}
