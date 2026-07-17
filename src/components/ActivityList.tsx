@@ -10,7 +10,7 @@ import {
   DialogFooter,
 } from '@/components/ui/pixelact-ui/dialog'
 
-const PRESET_COLORS = ['#6b5b95', '#1d2b53', '#7e2553', '#008751', '#ab5236', '#5f574f', '#2d1b2e', '#3a2a1a']
+const PRESET_COLORS = ['#000000', '#1d2b53', '#7e2553', '#008751', '#ab5236', '#5f574f', '#c2c3c7', '#fff1e8', '#ff004d', '#ffa300', '#ffec27', '#00e436', '#29adff', '#83769c', '#ff77a8', '#ffccaa']
 
 interface Props {
   activities: Activity[]
