@@ -196,7 +196,8 @@ function drawInfectionSpots(
         }
         if (!inside) continue
 
-        const seed = hashStr(block.id + bf.id + String(x) + String(y))
+        const sig = block.activityId + '|' + block.startHour + '|' + block.endHour + '|' + (block.customLabel ?? '')
+        const seed = hashStr(sig + bf.id + String(x) + String(y))
         if ((seed % 100) < bf.percentage) {
           ctx.fillStyle = '#ffffff'
           ctx.fillRect(x, y, PS, PS)
