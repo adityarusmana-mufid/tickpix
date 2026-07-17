@@ -142,6 +142,14 @@ function drawPixelArc(
   }
 }
 
+function hashStr(s: string): number {
+  let hash = 5381
+  for (let i = 0; i < s.length; i++) {
+    hash = ((hash << 5) + hash) + s.charCodeAt(i)
+  }
+  return Math.abs(hash)
+}
+
 function drawInfectionSpots(
   ctx: CanvasRenderingContext2D,
   cx: number, cy: number,
@@ -188,7 +196,7 @@ function drawInfectionSpots(
         }
         if (!inside) continue
 
-        const seed = (block.id + bf.id + String(x) + String(y)).split('').reduce((acc, c) => acc + c.charCodeAt(0), 0)
+        const seed = hashStr(block.id + bf.id + String(x) + String(y))
         if ((seed % 100) < bf.percentage) {
           ctx.fillStyle = infActivity.color
           ctx.fillRect(x, y, PS, PS)
