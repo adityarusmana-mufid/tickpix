@@ -60,3 +60,27 @@ html, body, #root {
   --warning-foreground: #3a3028;
   --default-inner-border-color: #835a4d;
 }
+
+.dark {
+  --color-secondary: #3a3028;
+  --color-secondary-foreground: #e8cfa7;
+  --color-primary: #5c4f3e;
+  --color-primary-foreground: #e8cfa7;
+  --destructive: #6b2020;
+  --destructive-foreground: #ffffff;
+  --ring: #5c4f3e;
+  --foreground: #e8cfa7;
+  --background: #1a1816;
+  --popover: #2a2520;
+  --popover-foreground: #e8cfa7;
+  --muted: #3a3028;
+  --muted-foreground: #c5996c;
+  --border: #5c4f3e;
+  --input: #3a3028;
+  --success: #4a7a4a;
+  --success-foreground: #ffffff;
+  --link: #c5996c;
+  --warning: #8a7a30;
+  --warning-foreground: #ffffff;
+  --default-inner-border-color: #5c4f3e;
+}

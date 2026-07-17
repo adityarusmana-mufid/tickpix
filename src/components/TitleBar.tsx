@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { getCurrentWindow } from '@tauri-apps/api/window'
 
 let win: ReturnType<typeof getCurrentWindow> | null = null
@@ -9,6 +10,12 @@ function getWin() {
 }
 
 export default function TitleBar() {
+  const [dark, setDark] = useState(() => document.documentElement.classList.contains('dark'))
+  const toggleDark = () => {
+    const next = !dark
+    document.documentElement.classList.toggle('dark', next)
+    setDark(next)
+  }
   const handleMinimize = () => getWin()?.minimize()
   const handleMaximize = async () => {
     const w = getWin()
@@ -38,6 +45,12 @@ export default function TitleBar() {
           onClick={handleMinimize}
         >
           −
+        </button>
+        <button
+          className="px-3 h-10 text-sm text-[#3a3028] hover:bg-[#c5996c] border-l-2 border-[#835a4d] font-pixel"
+          onClick={toggleDark}
+        >
+          {dark ? '☀' : '☾'}
         </button>
         <button
           className="px-3 h-10 text-sm text-[#3a3028] hover:bg-[#c5996c] border-l-2 border-[#835a4d] font-pixel"
