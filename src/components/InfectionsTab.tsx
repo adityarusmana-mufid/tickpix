@@ -98,42 +98,41 @@ export default function InfectionsTab({ blocks, activities, infections, onAddInf
         {infections.length === 0 && (
           <div className="text-xs font-pixel text-[#3a3028]">No infections configured.</div>
         )}
-        {infections.map((inf) => {
-          const sig = sigs.find(
-            (b) =>
-              b.activityId === inf.blockActivityId &&
-              b.startHour === inf.blockStartHour &&
-              b.endHour === inf.blockEndHour &&
-              b.customLabel === inf.blockCustomLabel
-          )
-          const infAct = activities.find((a) => a.id === inf.activityId)
-          return (
-            <div key={inf.id} className="flex items-center gap-1 py-1.5 border-b border-[#835a4d] last:border-b-0 flex-wrap">
-              <span className="text-[10px] font-pixel text-[#3a3028] flex-1 min-w-[80px]">
-                {sig ? signatureLabel(sig, activities) : 'Unknown'}
-              </span>
-              <span className="text-[10px] font-pixel text-[#3a3028]">→</span>
-              <span className="text-[10px] font-pixel text-[#3a3028]" style={{ color: infAct?.color }}>
-                {infAct?.name ?? '?'}
-              </span>
-              <input
-                type="range"
-                min={0}
-                max={100}
-                value={inf.percentage}
-                onChange={(e) => onUpdateInfection(inf.id, { percentage: Number(e.target.value) })}
-                className="w-16"
-              />
-              <span className="text-[10px] font-pixel text-[#3a3028] w-6 text-right">{inf.percentage}%</span>
-              <button
-                className="text-xs font-pixel text-[#3a3028] hover:text-[#3a3028] px-1"
-                onClick={() => onRemoveInfection(inf.id)}
-              >
-                ×
-              </button>
-            </div>
-          )
-        })}
+        <div className="space-y-1">
+          {infections.map((inf) => {
+            const sig = sigs.find(
+              (b) =>
+                b.activityId === inf.blockActivityId &&
+                b.startHour === inf.blockStartHour &&
+                b.endHour === inf.blockEndHour &&
+                b.customLabel === inf.blockCustomLabel
+            )
+            const infAct = activities.find((a) => a.id === inf.activityId)
+            return (
+              <div key={inf.id} className="w-full flex items-center gap-2 px-2 py-1.5 bg-[#c5996c] border border-[#835a4d] text-xs font-pixel text-[#3a3028]">
+                <div className="w-2 h-2 shrink-0 border border-[#835a4d]" style={{ backgroundColor: infAct?.color ?? '#835a4d' }} />
+                <span className="flex-1 truncate">
+                  {sig ? signatureLabel(sig, activities) : 'Unknown'} → {infAct?.name ?? '?'}
+                </span>
+                <input
+                  type="range"
+                  min={0}
+                  max={100}
+                  value={inf.percentage}
+                  onChange={(e) => onUpdateInfection(inf.id, { percentage: Number(e.target.value) })}
+                  className="w-16"
+                />
+                <span className="w-6 text-right">{inf.percentage}%</span>
+                <button
+                  className="hover:opacity-70 px-1"
+                  onClick={() => onRemoveInfection(inf.id)}
+                >
+                  ×
+                </button>
+              </div>
+            )
+          })}
+        </div>
       </div>
     </div>
   )
