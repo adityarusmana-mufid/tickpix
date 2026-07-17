@@ -12,6 +12,9 @@ import {
   updateBlockInDays,
   removeBlock,
   removeBlockInDays,
+  updateMission,
+  addGoal,
+  removeGoal,
 } from '../lib/store'
 
 export function useStore() {
@@ -80,6 +83,20 @@ export function useStore() {
     toast('All blocks cleared')
   }, [])
 
+  const handleUpdateMission = useCallback((mission: string) => {
+    setStore((s) => updateMission(s, mission))
+  }, [])
+
+  const handleAddGoal = useCallback((title: string) => {
+    setStore((s) => addGoal(s, title))
+    toast('Goal added')
+  }, [])
+
+  const handleRemoveGoal = useCallback((id: string) => {
+    setStore((s) => removeGoal(s, id))
+    toast('Goal removed')
+  }, [])
+
   return {
     store,
     setStore,
@@ -92,5 +109,8 @@ export function useStore() {
     removeBlock: handleRemoveBlock,
     selectBlock,
     clearAllBlocks: handleClearAllBlocks,
+    updateMission: handleUpdateMission,
+    addGoal: handleAddGoal,
+    removeGoal: handleRemoveGoal,
   }
 }

@@ -244,9 +244,12 @@ export default function ClockCanvas({
       ctx.textAlign = 'center'
       ctx.textBaseline = 'middle'
       const txt = String(i)
-      for (const [dx, dy] of [[-1,-1],[-1,1],[1,-1],[1,1]]) {
-        ctx.fillStyle = '#3a3028'
-        ctx.fillText(txt, lx + dx, ly + dy)
+      for (let ox = -3; ox <= 3; ox++) {
+        for (let oy = -3; oy <= 3; oy++) {
+          if (ox === 0 && oy === 0) continue
+          ctx.fillStyle = '#835a4d'
+          ctx.fillText(txt, lx + ox, ly + oy)
+        }
       }
       ctx.fillStyle = '#ffffff'
       ctx.fillText(txt, lx, ly)

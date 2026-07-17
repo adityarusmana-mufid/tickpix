@@ -36,6 +36,9 @@ export default function App() {
     removeBlock,
     selectBlock,
     clearAllBlocks,
+    updateMission,
+    addGoal,
+    removeGoal,
     setStore,
   } = useStore()
 
@@ -115,6 +118,8 @@ export default function App() {
             style={{ width: panelWidth }}
             activities={store.activities}
             blocks={store.blocks}
+            goals={store.goals}
+            mission={store.mission}
             selectedDayIndexes={store.selectedDayIndexes}
             selectedBlockId={store.selectedBlockId}
             onAddActivity={addActivity}
@@ -123,6 +128,9 @@ export default function App() {
             onUpdateBlock={updateBlock}
             onRemoveBlock={removeBlock}
             onSelectBlock={selectBlock}
+            onUpdateMission={updateMission}
+            onAddGoal={addGoal}
+            onRemoveGoal={removeGoal}
           />
         )}
 

@@ -1,16 +1,19 @@
 import { useState } from 'react'
 import type { CSSProperties } from 'react'
-import type { Block, Activity } from '../types'
+import type { Block, Activity, Goal } from '../types'
 import { Button } from '@/components/ui/pixelact-ui/button'
 import ActivityList from './ActivityList'
 import BlockEditor from './BlockEditor'
 import ScheduleList from './ScheduleList'
+import GoalsTab from './GoalsTab'
 
-const TABS = ['Activities', 'Block Editor', 'Schedule']
+const TABS = ['Activities', 'Block Editor', 'Schedule', 'Goals']
 
 interface Props {
   activities: Activity[]
   blocks: Block[]
+  goals: Goal[]
+  mission: string
   selectedDayIndexes: number[]
   selectedBlockId: string | null
   style?: CSSProperties
@@ -20,11 +23,16 @@ interface Props {
   onUpdateBlock: (id: string, updates: Partial<Block>) => void
   onRemoveBlock: (id: string) => void
   onSelectBlock: (id: string | null) => void
+  onUpdateMission: (mission: string) => void
+  onAddGoal: (title: string) => void
+  onRemoveGoal: (id: string) => void
 }
 
 export default function ActivityPanel({
   activities,
   blocks,
+  goals,
+  mission,
   selectedDayIndexes,
   selectedBlockId,
   style,
@@ -34,6 +42,9 @@ export default function ActivityPanel({
   onUpdateBlock,
   onRemoveBlock,
   onSelectBlock,
+  onUpdateMission,
+  onAddGoal,
+  onRemoveGoal,
 }: Props) {
   const [tab, setTab] = useState(0)
 
@@ -77,6 +88,15 @@ export default function ActivityPanel({
             activities={activities}
             onSelect={onSelectBlock}
             selectedId={selectedBlockId}
+          />
+        )}
+        {tab === 3 && (
+          <GoalsTab
+            mission={mission}
+            goals={goals}
+            onUpdateMission={onUpdateMission}
+            onAddGoal={onAddGoal}
+            onRemoveGoal={onRemoveGoal}
           />
         )}
       </div>

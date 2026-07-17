@@ -1,4 +1,4 @@
-import type { Store, Activity, Block } from '../types'
+import type { Store, Activity, Block, Goal } from '../types'
 
 const STORAGE_KEY = 'tickpix-store'
 
@@ -16,8 +16,10 @@ function newId(): string {
 
 export function createDefaultStore(): Store {
   return {
-    version: 2,
+    version: 3,
     activities: [...defaultActivities],
+    goals: [],
+    mission: '',
     blocks: [],
     selectedDayIndexes: [1],
     selectedBlockId: null,
@@ -26,13 +28,26 @@ export function createDefaultStore(): Store {
 }
 
 function migrateStore(s: Store): Store {
-  if ((s.version ?? 1) >= 2) return s
-  return {
-    ...s,
-    version: 2,
-    blocks: s.blocks.map((b) => ({ ...b, dayOfWeek: (b.dayOfWeek + 1) % 7 })),
-    selectedDayIndexes: s.selectedDayIndexes.map((i) => (i + 1) % 7),
+  let v = s.version ?? 1
+  let store = s
+  if (v < 2) {
+    store = {
+      ...store,
+      version: 2,
+      blocks: store.blocks.map((b) => ({ ...b, dayOfWeek: (b.dayOfWeek + 1) % 7 })),
+      selectedDayIndexes: store.selectedDayIndexes.map((i) => (i + 1) % 7),
+    }
+    v = 2
   }
+  if (v < 3) {
+    store = {
+      ...store,
+      version: 3,
+      goals: [],
+      mission: '',
+    }
+  }
+  return store
 }
 
 export function saveStore(store: Store): void {
@@ -132,6 +147,18 @@ export function removeBlockInDays(store: Store, id: string, dayIndexes: number[]
 
 export function getBlocksForDay(store: Store, dayOfWeek: number): Block[] {
   return store.blocks.filter((b) => b.dayOfWeek === dayOfWeek)
+}
+
+export function updateMission(store: Store, mission: string): Store {
+  return { ...store, mission }
+}
+
+export function addGoal(store: Store, title: string): Store {
+  return { ...store, goals: [...store.goals, { id: newId(), title }] }
+}
+
+export function removeGoal(store: Store, id: string): Store {
+  return { ...store, goals: store.goals.filter((g) => g.id !== id) }
 }
 
 export function replaceStore(raw: unknown): Store {

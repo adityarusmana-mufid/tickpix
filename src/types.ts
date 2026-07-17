@@ -4,6 +4,11 @@ export interface Activity {
   color: string
 }
 
+export interface Goal {
+  id: string
+  title: string
+}
+
 export interface Block {
   id: string
   dayOfWeek: number
@@ -16,6 +21,8 @@ export interface Block {
 export interface Store {
   version?: number
   activities: Activity[]
+  goals: Goal[]
+  mission: string
   blocks: Block[]
   selectedDayIndexes: number[]
   selectedBlockId: string | null
