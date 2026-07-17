@@ -174,8 +174,7 @@ function drawInfectionSpots(
   const maxY = snap(cy + outerR + PS)
 
   for (const bf of blockInfections) {
-    const infActivity = activities.find((a) => a.id === bf.activityId)
-    if (!infActivity) continue
+    if (bf.activityId && !activities.some((a) => a.id === bf.activityId)) continue
 
     for (let x = minX; x <= maxX; x += PS) {
       for (let y = minY; y <= maxY; y += PS) {
@@ -403,6 +402,7 @@ export default function ClockCanvas({
         let label = activity?.name ?? hovered.customLabel ?? ''
         if (blockInfections.length > 0) {
           const infNames = blockInfections.map((inf) => {
+            if (inf.customName) return `${inf.customName} (${inf.percentage}%)`
             const a = activities.find((act) => act.id === inf.activityId)
             return `${a?.name ?? '?'} (${inf.percentage}%)`
           })

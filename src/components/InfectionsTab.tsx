@@ -36,19 +36,23 @@ export default function InfectionsTab({ blocks, activities, infections, onAddInf
 
   const [selSig, setSelSig] = useState<string>('')
   const [selAct, setSelAct] = useState(activities[0]?.id ?? '')
+  const [customName, setCustomName] = useState('')
   const [pct, setPct] = useState(30)
 
   const handleAdd = () => {
     const sig = sigs.find((b) => signatureKey(b) === selSig)
-    if (!sig || !selAct) return
+    if (!sig) return
+    if (!selAct && !customName.trim()) return
     onAddInfection({
-      activityId: selAct,
+      activityId: selAct || null,
+      customName: customName.trim() || null,
       blockActivityId: sig.activityId,
       blockStartHour: sig.startHour,
       blockEndHour: sig.endHour,
       blockCustomLabel: sig.customLabel,
       percentage: pct,
     })
+    setCustomName('')
   }
 
   return (
@@ -76,6 +80,12 @@ export default function InfectionsTab({ blocks, activities, infections, onAddInf
               ))}
             </SelectContent>
           </Select>
+          <input
+            className="w-full px-2 py-1 text-xs bg-[#c5996c] border-2 border-[#835a4d] text-[#3a3028] font-pixel outline-none placeholder:text-[#3a3028]/60"
+            placeholder="Custom infection name..."
+            value={customName}
+            onChange={(e) => setCustomName(e.target.value)}
+          />
           <div className="flex items-center gap-2">
             <input
               type="range"
@@ -108,11 +118,12 @@ export default function InfectionsTab({ blocks, activities, infections, onAddInf
                 b.customLabel === inf.blockCustomLabel
             )
             const infAct = activities.find((a) => a.id === inf.activityId)
+            const infName = inf.customName ?? infAct?.name ?? '?'
             return (
               <div key={inf.id} className="w-full flex items-center gap-2 px-2 py-1.5 bg-[#c5996c] border border-[#835a4d] text-xs font-pixel text-[#3a3028]">
                 <div className="w-2 h-2 shrink-0 border border-[#835a4d]" style={{ backgroundColor: infAct?.color ?? '#835a4d' }} />
                 <span className="flex-1 truncate">
-                  {sig ? signatureLabel(sig, activities) : 'Unknown'} → {infAct?.name ?? '?'}
+                  {sig ? signatureLabel(sig, activities) : 'Unknown'} → {infName}
                 </span>
                 <input
                   type="range"

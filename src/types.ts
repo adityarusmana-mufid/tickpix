@@ -6,7 +6,8 @@ export interface Activity {
 
 export interface Infection {
   id: string
-  activityId: string
+  activityId: string | null
+  customName: string | null
   blockActivityId: string | null
   blockStartHour: number
   blockEndHour: number
