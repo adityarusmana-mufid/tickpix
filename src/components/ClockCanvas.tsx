@@ -9,6 +9,7 @@ interface Props {
   selectedBlockId: string | null
   onSelectBlock: (id: string | null) => void
   onCreateBlock: (startHour: number, endHour: number) => void
+  viewMode: 'view' | 'edit'
 }
 
 const HOURS = 24
@@ -147,6 +148,7 @@ export default function ClockCanvas({
   selectedBlockId,
   onSelectBlock,
   onCreateBlock,
+  viewMode,
 }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [dragging, setDragging] = useState(false)
@@ -288,6 +290,7 @@ export default function ClockCanvas({
 
   const handleMouseDown = useCallback(
     (e: React.MouseEvent<HTMLCanvasElement>) => {
+      if (viewMode === 'view') return
       const hour = getHourFromEvent(e)
       if (hour === null) return
       const clicked = dayBlocks.find((b) => blockContains(b, hour))
@@ -305,6 +308,7 @@ export default function ClockCanvas({
 
   const handleMouseMove = useCallback(
     (e: React.MouseEvent<HTMLCanvasElement>) => {
+      if (viewMode === 'view') return
       if (dragging) {
         const hour = getHourFromEvent(e)
         if (hour !== null) setDragCurrent(hour)
@@ -343,6 +347,7 @@ export default function ClockCanvas({
 
   const handleRightClick = useCallback(
     (e: React.MouseEvent<HTMLCanvasElement>) => {
+      if (viewMode === 'view') return
       e.preventDefault()
       const hour = getHourFromEvent(e)
       if (hour === null) return
@@ -356,7 +361,7 @@ export default function ClockCanvas({
     <div className="flex-1 relative min-h-0">
       <canvas
         ref={canvasRef}
-        className="absolute inset-0 w-full h-full cursor-crosshair"
+        className={`absolute inset-0 w-full h-full ${viewMode === 'edit' ? 'cursor-crosshair' : 'cursor-default'}`}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}

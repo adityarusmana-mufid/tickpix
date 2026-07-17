@@ -136,6 +136,7 @@ export default function App() {
             selectedBlockId={store.selectedBlockId}
             onSelectBlock={handleSelectBlock}
             onCreateBlock={handleCreateBlock}
+            viewMode={store.viewMode}
           />
 
           <div className="flex items-center justify-center gap-2 p-1 bg-[#a4c263] border-t border-[#835a4d] shrink-0">
