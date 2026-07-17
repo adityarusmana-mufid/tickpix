@@ -240,10 +240,10 @@ export default function ClockCanvas({
       const lr = innerR - PS * 4
       const lx = cx + lr * Math.cos(angleRad)
       const ly = cy + lr * Math.sin(angleRad)
-      ctx.font = '8px "Press Start 2P", monospace'
+      ctx.font = '10px "Press Start 2P", monospace'
       ctx.textAlign = 'center'
       ctx.textBaseline = 'middle'
-      ctx.fillStyle = '#3a3028'
+      ctx.fillStyle = '#ffffff'
       ctx.fillText(String(i), lx, ly)
     }
 
