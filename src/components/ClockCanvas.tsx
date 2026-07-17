@@ -198,7 +198,7 @@ function drawInfectionSpots(
 
         const seed = hashStr(block.id + bf.id + String(x) + String(y))
         if ((seed % 100) < bf.percentage) {
-          ctx.fillStyle = infActivity.color
+          ctx.fillStyle = '#ffffff'
           ctx.fillRect(x, y, PS, PS)
         }
       }
