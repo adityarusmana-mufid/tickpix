@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from 'react'
+import { useState, useCallback, useRef, useEffect } from 'react'
 import { getCurrentWindow } from '@tauri-apps/api/window'
 import { save, open } from '@tauri-apps/plugin-dialog'
 import { writeTextFile, readTextFile } from '@tauri-apps/plugin-fs'
@@ -77,6 +77,28 @@ export default function App() {
     window.addEventListener('mouseup', handleMouseUp)
   }, [])
 
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        if (store.selectedBlockId) {
+          selectBlock(null)
+          setViewMode('view')
+        }
+      }
+      if ((e.ctrlKey || e.metaKey) && e.key === 'e') {
+        e.preventDefault()
+        setViewMode(store.viewMode === 'edit' ? 'view' : 'edit')
+      }
+      if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+        e.preventDefault()
+        const btn = document.querySelector('[data-export-btn]') as HTMLButtonElement
+        btn?.click()
+      }
+    }
+    window.addEventListener('keydown', handler)
+    return () => window.removeEventListener('keydown', handler)
+  }, [store.selectedBlockId, store.viewMode, setViewMode, selectBlock])
+
   return (
     <div className="h-screen w-screen flex flex-col bg-[#a4c263] overflow-hidden select-none pixel-font relative">
       <Toaster position="top-right" />
@@ -152,6 +174,7 @@ export default function App() {
             <Button
               variant="secondary"
               size="sm"
+              data-export-btn=""
               onClick={async () => {
                 try {
                   const path = await save({
