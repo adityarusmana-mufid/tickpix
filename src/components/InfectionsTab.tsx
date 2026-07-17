@@ -1,6 +1,13 @@
 import { useState } from 'react'
 import type { Block, Activity, Infection } from '../types'
 import { Button } from '@/components/ui/pixelact-ui/button'
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from '@/components/ui/pixelact-ui/select'
 
 interface Props {
   blocks: Block[]
@@ -49,25 +56,26 @@ export default function InfectionsTab({ blocks, activities, infections, onAddInf
       <div>
         <span className="block text-xs font-pixel text-[#3a3028] mb-1">Add Infection</span>
         <div className="flex flex-col gap-1.5">
-          <select
-            className="w-full px-2 py-1 text-xs bg-[#c5996c] border-2 border-[#835a4d] text-[#3a3028] font-pixel outline-none"
-            value={selSig}
-            onChange={(e) => setSelSig(e.target.value)}
-          >
-            <option value="">Select block...</option>
-            {sigs.map((s) => (
-              <option key={signatureKey(s)} value={signatureKey(s)}>{signatureLabel(s, activities)}</option>
-            ))}
-          </select>
-          <select
-            className="w-full px-2 py-1 text-xs bg-[#c5996c] border-2 border-[#835a4d] text-[#3a3028] font-pixel outline-none"
-            value={selAct}
-            onChange={(e) => setSelAct(e.target.value)}
-          >
-            {activities.map((a) => (
-              <option key={a.id} value={a.id}>{a.name}</option>
-            ))}
-          </select>
+          <Select value={selSig} onValueChange={setSelSig}>
+            <SelectTrigger className="text-xs font-pixel">
+              <SelectValue placeholder="Select block..." />
+            </SelectTrigger>
+            <SelectContent className="font-pixel">
+              {sigs.map((s) => (
+                <SelectItem key={signatureKey(s)} value={signatureKey(s)}>{signatureLabel(s, activities)}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Select value={selAct} onValueChange={setSelAct}>
+            <SelectTrigger className="text-xs font-pixel">
+              <SelectValue placeholder="Select activity..." />
+            </SelectTrigger>
+            <SelectContent className="font-pixel">
+              {activities.map((a) => (
+                <SelectItem key={a.id} value={a.id}>{a.name}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
           <div className="flex items-center gap-2">
             <input
               type="range"
