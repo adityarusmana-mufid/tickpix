@@ -135,5 +135,8 @@ export function getBlocksForDay(store: Store, dayOfWeek: number): Block[] {
 }
 
 export function replaceStore(raw: unknown): Store {
+  if (!raw || typeof raw !== 'object') throw new Error('Invalid store data')
+  const obj = raw as Record<string, unknown>
+  if (!Array.isArray(obj.activities) || !Array.isArray(obj.blocks)) throw new Error('Invalid store data')
   return migrateStore(raw as Store)
 }

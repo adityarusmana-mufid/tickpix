@@ -42,7 +42,7 @@ export default function App() {
   const [exported, setExported] = useState(false)
   const [confirmClear, setConfirmClear] = useState(false)
   const [confirmImport, setConfirmImport] = useState(false)
-  const [importData, setImportData] = useState<string | null>(null)
+  const [importData, setImportData] = useState<unknown>(null)
   const resizing = useRef(false)
 
   const handleCreateBlock = (startHour: number, endHour: number) => {
@@ -185,7 +185,7 @@ export default function App() {
                   setImportData(parsed)
                   setConfirmImport(true)
                 } catch {
-                  toast('Import failed: invalid file')
+                  toast('Import failed')
                 }
               }}
             >
@@ -200,7 +200,7 @@ export default function App() {
                   </DialogDescription>
                 </DialogHeader>
                 <DialogFooter>
-                  <Button variant="secondary" size="sm" onClick={() => setConfirmImport(false)}>
+                  <Button variant="secondary" size="sm" onClick={() => { setConfirmImport(false); setImportData(null) }}>
                     Cancel
                   </Button>
                   <Button variant="destructive" size="sm" onClick={() => {
