@@ -7,6 +7,7 @@ import { replaceStore } from './lib/store'
 import TitleBar from './components/TitleBar'
 import ClockCanvas from './components/ClockCanvas'
 import DaySelector from './components/DaySelector'
+import Onboarding from './components/Onboarding'
 import ActivityPanel from './components/ActivityPanel'
 import { Button } from '@/components/ui/pixelact-ui/button'
 import {
@@ -43,6 +44,9 @@ export default function App() {
   const [confirmClear, setConfirmClear] = useState(false)
   const [confirmImport, setConfirmImport] = useState(false)
   const [importData, setImportData] = useState<unknown>(null)
+  const [showOnboarding, setShowOnboarding] = useState(() => {
+    return !localStorage.getItem('tickpix-onboarding-done')
+  })
   const resizing = useRef(false)
 
   const handleCreateBlock = (startHour: number, endHour: number) => {
@@ -75,6 +79,11 @@ export default function App() {
     }
     window.addEventListener('mousemove', handleMouseMove)
     window.addEventListener('mouseup', handleMouseUp)
+  }, [])
+
+  const handleOnboardingClose = useCallback(() => {
+    setShowOnboarding(false)
+    localStorage.setItem('tickpix-onboarding-done', 'true')
   }, [])
 
   useEffect(() => {
@@ -248,6 +257,8 @@ export default function App() {
           />
         </div>
       </div>
+
+      <Onboarding open={showOnboarding} onClose={handleOnboardingClose} />
 
       <div
         className="absolute bottom-0 right-0 w-6 h-6 cursor-se-resize"
