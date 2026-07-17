@@ -1,10 +1,11 @@
 import { useRef, useEffect, useCallback, useState } from 'react'
-import type { Block, Activity } from '../types'
+import type { Block, Activity, Infection } from '../types'
 import { Badge } from '@/components/ui/pixelact-ui/badge'
 
 interface Props {
   blocks: Block[]
   activities: Activity[]
+  infections: Infection[]
   selectedDayIndexes: number[]
   selectedBlockId: string | null
   onSelectBlock: (id: string | null) => void
@@ -141,9 +142,66 @@ function drawPixelArc(
   }
 }
 
+function drawInfectionSpots(
+  ctx: CanvasRenderingContext2D,
+  cx: number, cy: number,
+  innerR: number, outerR: number,
+  startAngle: number, endAngle: number,
+  block: Block,
+  infections: Infection[],
+  activities: Activity[],
+) {
+  const blockInfections = infections.filter(
+    (inf) =>
+      inf.blockActivityId === block.activityId &&
+      inf.blockStartHour === block.startHour &&
+      inf.blockEndHour === block.endHour &&
+      inf.blockCustomLabel === block.customLabel
+  )
+  if (blockInfections.length === 0) return
+
+  const minX = snap(cx - outerR - PS)
+  const maxX = snap(cx + outerR + PS)
+  const minY = snap(cy - outerR - PS)
+  const maxY = snap(cy + outerR + PS)
+
+  for (const bf of blockInfections) {
+    const infActivity = activities.find((a) => a.id === bf.activityId)
+    if (!infActivity) continue
+
+    for (let x = minX; x <= maxX; x += PS) {
+      for (let y = minY; y <= maxY; y += PS) {
+        const dx = x + PS / 2 - cx
+        const dy = y + PS / 2 - cy
+        const dist = Math.sqrt(dx * dx + dy * dy)
+        if (dist < innerR || dist > outerR) continue
+
+        const angle = Math.atan2(dy, dx) * (180 / Math.PI)
+        const a = ((angle + 90 + 720) % 360)
+        const s = ((startAngle + 90 + 720) % 360)
+        const e = ((endAngle + 90 + 720) % 360)
+        let inside = false
+        if (s <= e) {
+          inside = a >= s && a <= e
+        } else {
+          inside = a >= s || a <= e
+        }
+        if (!inside) continue
+
+        const seed = (block.id + bf.id + String(x) + String(y)).split('').reduce((acc, c) => acc + c.charCodeAt(0), 0)
+        if ((seed % 100) < bf.percentage) {
+          ctx.fillStyle = infActivity.color
+          ctx.fillRect(x, y, PS, PS)
+        }
+      }
+    }
+  }
+}
+
 export default function ClockCanvas({
   blocks,
   activities,
+  infections,
   selectedDayIndexes,
   selectedBlockId,
   onSelectBlock,
@@ -213,6 +271,7 @@ export default function ClockCanvas({
         ctx, cx, cy, sliceInnerR, outerR, sAng, eAng,
         color + (isSelected ? 'cc' : '99')
       )
+      drawInfectionSpots(ctx, cx, cy, sliceInnerR, outerR, sAng, eAng, block, infections, activities)
     }
 
     // Draw drag preview (pizza slice)
@@ -267,7 +326,7 @@ export default function ClockCanvas({
     // Center cap
     ctx.fillStyle = '#3a3028'
     ctx.fillRect(cx - PS, cy - PS, PS * 2, PS * 2)
-  }, [dayBlocks, selectedBlockId, getActivity, dragging, dragStart, dragCurrent, now])
+  }, [dayBlocks, selectedBlockId, getActivity, infections, dragging, dragStart, dragCurrent, now])
 
   const getHourFromEvent = useCallback(
     (e: React.MouseEvent<HTMLCanvasElement>): number | null => {

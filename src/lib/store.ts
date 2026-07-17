@@ -1,4 +1,4 @@
-import type { Store, Activity, Block, Goal } from '../types'
+import type { Store, Activity, Block, Goal, Infection } from '../types'
 
 const STORAGE_KEY = 'tickpix-store'
 
@@ -16,8 +16,9 @@ function newId(): string {
 
 export function createDefaultStore(): Store {
   return {
-    version: 3,
+    version: 4,
     activities: [...defaultActivities],
+    infections: [],
     goals: [],
     mission: '',
     blocks: [],
@@ -45,6 +46,14 @@ function migrateStore(s: Store): Store {
       version: 3,
       goals: [],
       mission: '',
+    }
+    v = 3
+  }
+  if (v < 4) {
+    store = {
+      ...store,
+      version: 4,
+      infections: [],
     }
   }
   return store
@@ -159,6 +168,18 @@ export function addGoal(store: Store, title: string): Store {
 
 export function removeGoal(store: Store, id: string): Store {
   return { ...store, goals: store.goals.filter((g) => g.id !== id) }
+}
+
+export function addInfection(store: Store, infection: Omit<Infection, 'id'>): Store {
+  return { ...store, infections: [...store.infections, { id: newId(), ...infection }] }
+}
+
+export function removeInfection(store: Store, id: string): Store {
+  return { ...store, infections: store.infections.filter((i) => i.id !== id) }
+}
+
+export function updateInfection(store: Store, id: string, updates: Partial<Infection>): Store {
+  return { ...store, infections: store.infections.map((i) => (i.id === id ? { ...i, ...updates } : i)) }
 }
 
 export function replaceStore(raw: unknown): Store {

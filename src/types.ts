@@ -4,6 +4,16 @@ export interface Activity {
   color: string
 }
 
+export interface Infection {
+  id: string
+  activityId: string
+  blockActivityId: string | null
+  blockStartHour: number
+  blockEndHour: number
+  blockCustomLabel: string | null
+  percentage: number
+}
+
 export interface Goal {
   id: string
   title: string
@@ -21,6 +31,7 @@ export interface Block {
 export interface Store {
   version?: number
   activities: Activity[]
+  infections: Infection[]
   goals: Goal[]
   mission: string
   blocks: Block[]

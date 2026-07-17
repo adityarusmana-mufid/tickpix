@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from 'react'
-import type { Block } from '../types'
+import type { Block, Infection } from '../types'
 import { toast } from '@/components/ui/pixelact-ui/toast'
 import {
   createDefaultStore,
@@ -15,6 +15,9 @@ import {
   updateMission,
   addGoal,
   removeGoal,
+  addInfection,
+  removeInfection,
+  updateInfection,
 } from '../lib/store'
 
 export function useStore() {
@@ -97,6 +100,21 @@ export function useStore() {
     toast('Goal removed')
   }, [])
 
+  const handleAddInfection = useCallback((infection: Omit<Infection, 'id'>) => {
+    setStore((s) => addInfection(s, infection))
+    toast('Infection added')
+  }, [])
+
+  const handleUpdateInfection = useCallback((id: string, updates: Partial<Infection>) => {
+    setStore((s) => updateInfection(s, id, updates))
+    toast('Infection updated')
+  }, [])
+
+  const handleRemoveInfection = useCallback((id: string) => {
+    setStore((s) => removeInfection(s, id))
+    toast('Infection removed')
+  }, [])
+
   return {
     store,
     setStore,
@@ -112,5 +130,8 @@ export function useStore() {
     updateMission: handleUpdateMission,
     addGoal: handleAddGoal,
     removeGoal: handleRemoveGoal,
+    addInfection: handleAddInfection,
+    updateInfection: handleUpdateInfection,
+    removeInfection: handleRemoveInfection,
   }
 }
