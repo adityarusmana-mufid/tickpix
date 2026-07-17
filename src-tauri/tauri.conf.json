@@ -41,7 +41,7 @@
       "deb": {
         "depends": []
       },
-      "appimage": null
+      "appimage": {}
     },
     "macOS": {
       "minimumSystemVersion": "10.15"
