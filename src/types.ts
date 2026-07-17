@@ -14,6 +14,7 @@ export interface Block {
 }
 
 export interface Store {
+  version?: number
   activities: Activity[]
   blocks: Block[]
   selectedDayIndexes: number[]

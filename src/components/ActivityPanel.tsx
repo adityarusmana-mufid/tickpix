@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import type { CSSProperties } from 'react'
 import type { Block, Activity } from '../types'
 import { Button } from '@/components/ui/pixelact-ui/button'
 import ActivityList from './ActivityList'
@@ -10,10 +11,12 @@ const TABS = ['Activities', 'Block Editor', 'Schedule']
 interface Props {
   activities: Activity[]
   blocks: Block[]
-  selectedDay: number
+  selectedDayIndexes: number[]
   selectedBlockId: string | null
+  style?: CSSProperties
   onAddActivity: (name: string, color: string) => void
   onRemoveActivity: (id: string) => void
+  onCreateBlock: (days: number[], startHour: number, endHour: number, activityId: string | null, customLabel: string | null) => void
   onUpdateBlock: (id: string, updates: Partial<Block>) => void
   onRemoveBlock: (id: string) => void
   onSelectBlock: (id: string | null) => void
@@ -22,10 +25,12 @@ interface Props {
 export default function ActivityPanel({
   activities,
   blocks,
-  selectedDay,
+  selectedDayIndexes,
   selectedBlockId,
+  style,
   onAddActivity,
   onRemoveActivity,
+  onCreateBlock,
   onUpdateBlock,
   onRemoveBlock,
   onSelectBlock,
@@ -37,15 +42,14 @@ export default function ActivityPanel({
     : null
 
   return (
-    <div className="w-64 bg-[#0f0f1a] border-r-2 border-[#2a2a3e] flex flex-col shrink-0">
-      <div className="flex border-b-2 border-[#2a2a3e]">
+    <div className="bg-[#a4c263] flex flex-col shrink-0" style={style}>
+      <div className="flex border-b-2 border-[#835a4d] overflow-hidden">
         {TABS.map((t, i) => (
           <Button
             key={t}
             variant={tab === i ? 'default' : 'secondary'}
-            size="sm"
             onClick={() => setTab(i)}
-            className={`flex-1 rounded-none border-r-2 border-[#2a2a3e] last:border-r-0 ${tab === i ? '!bg-white !text-black' : '!text-[#808090]'}`}
+            className={`flex-1 min-w-0 rounded-none border-r-2 border-[#835a4d] last:border-r-0 text-[10px] px-1.5 h-8 truncate ${tab === i ? '!bg-[#ddb88b] !text-[#3a3028]' : '!text-[#3a3028]'}`}
           >
             {t}
           </Button>
@@ -58,7 +62,10 @@ export default function ActivityPanel({
         {tab === 1 && (
           <BlockEditor
             block={selectedBlock}
+            blocks={blocks}
             activities={activities}
+            selectedDayIndexes={selectedDayIndexes}
+            onCreate={onCreateBlock}
             onUpdate={onUpdateBlock}
             onRemove={onRemoveBlock}
             onClose={() => onSelectBlock(null)}
@@ -66,7 +73,7 @@ export default function ActivityPanel({
         )}
         {tab === 2 && (
           <ScheduleList
-            blocks={blocks.filter((b) => b.dayOfWeek === selectedDay)}
+            blocks={blocks}
             activities={activities}
             onSelect={onSelectBlock}
             selectedId={selectedBlockId}

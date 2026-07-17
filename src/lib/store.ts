@@ -16,11 +16,22 @@ function newId(): string {
 
 export function createDefaultStore(): Store {
   return {
+    version: 2,
     activities: [...defaultActivities],
     blocks: [],
-    selectedDayIndexes: [0],
+    selectedDayIndexes: [1],
     selectedBlockId: null,
     viewMode: 'view',
+  }
+}
+
+function migrateStore(s: Store): Store {
+  if ((s.version ?? 1) >= 2) return s
+  return {
+    ...s,
+    version: 2,
+    blocks: s.blocks.map((b) => ({ ...b, dayOfWeek: (b.dayOfWeek + 1) % 7 })),
+    selectedDayIndexes: s.selectedDayIndexes.map((i) => (i + 1) % 7),
   }
 }
 
@@ -32,7 +43,8 @@ export function loadStore(): Store | null {
   const raw = localStorage.getItem(STORAGE_KEY)
   if (!raw) return null
   try {
-    return JSON.parse(raw) as Store
+    const s = JSON.parse(raw) as Store
+    return migrateStore(s)
   } catch {
     return null
   }
@@ -83,10 +95,37 @@ export function updateBlock(store: Store, id: string, updates: Partial<Block>): 
   }
 }
 
+export function updateBlockInDays(store: Store, id: string, dayIndexes: number[], updates: Partial<Block>): Store {
+  const block = store.blocks.find((b) => b.id === id)
+  if (!block) return store
+  return {
+    ...store,
+    blocks: store.blocks.map((b) =>
+      b.id === id || (dayIndexes.includes(b.dayOfWeek) && b.startHour === block.startHour && b.endHour === block.endHour)
+        ? { ...b, ...updates }
+        : b
+    ),
+  }
+}
+
 export function removeBlock(store: Store, id: string): Store {
   return {
     ...store,
     blocks: store.blocks.filter((b) => b.id !== id),
+    selectedBlockId: store.selectedBlockId === id ? null : store.selectedBlockId,
+  }
+}
+
+export function removeBlockInDays(store: Store, id: string, dayIndexes: number[]): Store {
+  const block = store.blocks.find((b) => b.id === id)
+  if (!block) return store
+  return {
+    ...store,
+    blocks: store.blocks.filter((b) => {
+      if (b.id === id) return false
+      if (dayIndexes.includes(b.dayOfWeek) && b.startHour === block.startHour && b.endHour === block.endHour) return false
+      return true
+    }),
     selectedBlockId: store.selectedBlockId === id ? null : store.selectedBlockId,
   }
 }

@@ -1,10 +1,24 @@
+import { useState, useCallback, useRef } from 'react'
+import { getCurrentWindow } from '@tauri-apps/api/window'
 import { useStore } from './hooks/useStore'
 import TitleBar from './components/TitleBar'
 import ClockCanvas from './components/ClockCanvas'
 import DaySelector from './components/DaySelector'
 import ActivityPanel from './components/ActivityPanel'
 import { Button } from '@/components/ui/pixelact-ui/button'
-import { getBlocksForDay } from './lib/store'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from '@/components/ui/pixelact-ui/dialog'
+import { Toaster } from '@/components/ui/sonner'
+import { toast } from '@/components/ui/pixelact-ui/toast'
+
+const MIN_PANEL_WIDTH = 220
+const MAX_PANEL_WIDTH = 600
 
 export default function App() {
   const {
@@ -17,14 +31,23 @@ export default function App() {
     updateBlock,
     removeBlock,
     selectBlock,
+    clearAllBlocks,
   } = useStore()
 
-  const selectedDay = store.selectedDayIndexes[0] ?? 0
-  const dayBlocks = getBlocksForDay(store, selectedDay)
+  const [panelWidth, setPanelWidth] = useState(320)
+  const [exported, setExported] = useState(false)
+  const [confirmClear, setConfirmClear] = useState(false)
+  const resizing = useRef(false)
 
   const handleCreateBlock = (startHour: number, endHour: number) => {
     const activityId = store.activities.length > 0 ? store.activities[0].id : null
     addBlockToDays(store.selectedDayIndexes, startHour, endHour, activityId, null)
+  }
+
+  const handleCreateBlockFromEditor = (
+    days: number[], startHour: number, endHour: number, activityId: string | null, customLabel: string | null
+  ) => {
+    addBlockToDays(days, startHour, endHour, activityId, customLabel)
   }
 
   const handleSelectBlock = (id: string | null) => {
@@ -34,42 +57,109 @@ export default function App() {
     }
   }
 
+  const handleResizeStart = useCallback(() => {
+    resizing.current = true
+    const handleMouseMove = (e: MouseEvent) => {
+      setPanelWidth(Math.max(MIN_PANEL_WIDTH, Math.min(MAX_PANEL_WIDTH, e.clientX)))
+    }
+    const handleMouseUp = () => {
+      resizing.current = false
+      window.removeEventListener('mousemove', handleMouseMove)
+      window.removeEventListener('mouseup', handleMouseUp)
+    }
+    window.addEventListener('mousemove', handleMouseMove)
+    window.addEventListener('mouseup', handleMouseUp)
+  }, [])
+
   return (
-    <div className="h-screen w-screen flex flex-col bg-[#0f0f1a] overflow-hidden select-none pixel-font">
+    <div className="h-screen w-screen flex flex-col bg-[#a4c263] overflow-hidden select-none pixel-font relative">
+      <Toaster position="top-right" />
       <TitleBar />
 
       <div className="flex-1 flex overflow-hidden min-h-0">
         {store.viewMode === 'edit' && (
           <ActivityPanel
+            style={{ width: panelWidth }}
             activities={store.activities}
             blocks={store.blocks}
-            selectedDay={selectedDay}
+            selectedDayIndexes={store.selectedDayIndexes}
             selectedBlockId={store.selectedBlockId}
             onAddActivity={addActivity}
             onRemoveActivity={removeActivity}
+            onCreateBlock={handleCreateBlockFromEditor}
             onUpdateBlock={updateBlock}
             onRemoveBlock={removeBlock}
             onSelectBlock={selectBlock}
           />
         )}
 
-        <div className="flex-1 flex flex-col min-w-0">
+        {store.viewMode === 'edit' && (
+          <div
+            className="w-1.5 cursor-col-resize bg-[#835a4d] hover:bg-[#c5996c] active:bg-[#835a4d] shrink-0"
+            onMouseDown={handleResizeStart}
+          />
+        )}
+
+        <div className="flex-1 flex flex-col min-w-0 bg-[#d3e077]">
           <ClockCanvas
             blocks={store.blocks}
             activities={store.activities}
-            selectedDay={selectedDay}
+            selectedDayIndexes={store.selectedDayIndexes}
             selectedBlockId={store.selectedBlockId}
             onSelectBlock={handleSelectBlock}
             onCreateBlock={handleCreateBlock}
           />
 
-          <div className="flex items-center justify-center gap-2 p-1 bg-[#0f0f1a] border-t border-[#2a2a3e] shrink-0">
+          <div className="flex items-center justify-center gap-2 p-1 bg-[#a4c263] border-t border-[#835a4d] shrink-0">
             <Button
               variant="secondary"
               size="sm"
               onClick={() => setViewMode(store.viewMode === 'edit' ? 'view' : 'edit')}
             >
               {store.viewMode === 'edit' ? '← CLOSE' : 'EDIT'}
+            </Button>
+            <Dialog open={confirmClear} onOpenChange={setConfirmClear}>
+              <Button
+                variant="destructive"
+                size="sm"
+                onClick={() => setConfirmClear(true)}
+              >
+                CLEAR ALL
+              </Button>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Clear all blocks?</DialogTitle>
+                  <DialogDescription>
+                    This will remove every block on every day. This cannot be undone.
+                  </DialogDescription>
+                </DialogHeader>
+                <DialogFooter>
+                  <Button variant="secondary" size="sm" onClick={() => setConfirmClear(false)}>
+                    Cancel
+                  </Button>
+                  <Button variant="destructive" size="sm" onClick={() => { clearAllBlocks(); setConfirmClear(false) }}>
+                    Clear All
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={() => {
+                const blob = new Blob([JSON.stringify(store, null, 2)], { type: 'application/json' })
+                const url = URL.createObjectURL(blob)
+                const a = document.createElement('a')
+                a.href = url
+                a.download = 'tickpix-schedule.json'
+                a.click()
+                URL.revokeObjectURL(url)
+                toast('Schedule exported')
+                setExported(true)
+                setTimeout(() => setExported(false), 1500)
+              }}
+            >
+              {exported ? 'EXPORTED!' : 'EXPORT JSON'}
             </Button>
           </div>
 
@@ -78,6 +168,15 @@ export default function App() {
             onToggle={toggleDay}
           />
         </div>
+      </div>
+
+      <div
+        className="absolute bottom-0 right-0 w-6 h-6 cursor-se-resize"
+        onMouseDown={() => getCurrentWindow().startResizeDragging('SouthEast')}
+      >
+        <svg viewBox="0 0 12 12" className="w-full h-full text-[#3a3028]">
+          <path d="M0 12 L12 12 L12 0" fill="none" stroke="currentColor" strokeWidth="2" />
+        </svg>
       </div>
     </div>
   )

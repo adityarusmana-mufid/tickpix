@@ -28,7 +28,7 @@ html, body, #root {
   width: 100%;
   height: 100%;
   overflow: hidden;
-  background: #0f0f1a;
+  background: #d3e077;
 }
 
 .font-pixel {
@@ -37,26 +37,26 @@ html, body, #root {
 
 /* Pixelact UI theme vars */
 :root {
-  --color-secondary: #2a2a3e;
-  --color-secondary-foreground: #c0c0d0;
-  --color-primary: #3a3a5e;
-  --color-primary-foreground: #ffffff;
-  --destructive: #5a2a2a;
-  --destructive-foreground: #ff6b6b;
-  --ring: #6b6b9e;
+  --color-secondary: #c5996c;
+  --color-secondary-foreground: #3a3028;
+  --color-primary: #ddb88b;
+  --color-primary-foreground: #3a3028;
+  --destructive: #835a4d;
+  --destructive-foreground: #ffffff;
+  --ring: #835a4d;
   --radius: 0;
-  --foreground: #c0c0d0;
-  --background: #0f0f1a;
-  --popover: #1a1a2e;
-  --popover-foreground: #c0c0d0;
-  --muted: #1a1a2e;
-  --muted-foreground: #808090;
-  --border: #2a2a3e;
-  --input: #2a2a3e;
-  --success: #2a4a2a;
-  --success-foreground: #7ebd7e;
-  --link: #6b6b9e;
-  --warning: #4a3a1a;
-  --warning-foreground: #feb236;
-  --default-inner-border-color: #4a4a6e;
+  --foreground: #3a3028;
+  --background: #d3e077;
+  --popover: #f4e6c3;
+  --popover-foreground: #3a3028;
+  --muted: #c5996c;
+  --muted-foreground: #3a3028;
+  --border: #835a4d;
+  --input: #835a4d;
+  --success: #ddb88b;
+  --success-foreground: #3a3028;
+  --link: #835a4d;
+  --warning: #c5996c;
+  --warning-foreground: #3a3028;
+  --default-inner-border-color: #835a4d;
 }

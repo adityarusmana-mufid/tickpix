@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect } from 'react'
 import type { Block } from '../types'
+import { toast } from '@/components/ui/pixelact-ui/toast'
 import {
   createDefaultStore,
   saveStore,
@@ -8,7 +9,9 @@ import {
   removeActivity,
   addBlockToDays,
   updateBlock,
+  updateBlockInDays,
   removeBlock,
+  removeBlockInDays,
 } from '../lib/store'
 
 export function useStore() {
@@ -36,29 +39,45 @@ export function useStore() {
 
   const handleAddActivity = useCallback((name: string, color: string) => {
     setStore((s) => addActivity(s, name, color))
+    toast('Activity added')
   }, [])
 
   const handleRemoveActivity = useCallback((id: string) => {
     setStore((s) => removeActivity(s, id))
+    toast('Activity removed')
   }, [])
 
   const handleAddBlockToDays = useCallback(
     (days: number[], startHour: number, endHour: number, activityId: string | null, customLabel: string | null) => {
       setStore((s) => addBlockToDays(s, days, startHour, endHour, activityId, customLabel))
+      toast('Block created')
     },
     []
   )
 
   const handleUpdateBlock = useCallback((id: string, updates: Partial<Block>) => {
-    setStore((s) => updateBlock(s, id, updates))
+    setStore((s) => {
+      if (s.selectedDayIndexes.length > 1) return updateBlockInDays(s, id, s.selectedDayIndexes, updates)
+      return updateBlock(s, id, updates)
+    })
+    toast('Block updated')
   }, [])
 
   const handleRemoveBlock = useCallback((id: string) => {
-    setStore((s) => removeBlock(s, id))
+    setStore((s) => {
+      if (s.selectedDayIndexes.length > 1) return removeBlockInDays(s, id, s.selectedDayIndexes)
+      return removeBlock(s, id)
+    })
+    toast('Block removed')
   }, [])
 
   const selectBlock = useCallback((id: string | null) => {
     setStore((s) => ({ ...s, selectedBlockId: id }))
+  }, [])
+
+  const handleClearAllBlocks = useCallback(() => {
+    setStore((s) => ({ ...s, blocks: [], selectedBlockId: null }))
+    toast('All blocks cleared')
   }, [])
 
   return {
@@ -71,5 +90,6 @@ export function useStore() {
     updateBlock: handleUpdateBlock,
     removeBlock: handleRemoveBlock,
     selectBlock,
+    clearAllBlocks: handleClearAllBlocks,
   }
 }
