@@ -10,10 +10,15 @@ function getWin() {
 }
 
 export default function TitleBar() {
-  const [dark, setDark] = useState(() => document.documentElement.classList.contains('dark'))
+  const [dark, setDark] = useState(() => {
+    const saved = localStorage.getItem('tickpix-theme')
+    if (saved) document.documentElement.classList.toggle('dark', saved === 'dark')
+    return document.documentElement.classList.contains('dark')
+  })
   const toggleDark = () => {
     const next = !dark
     document.documentElement.classList.toggle('dark', next)
+    localStorage.setItem('tickpix-theme', next ? 'dark' : 'light')
     setDark(next)
   }
   const handleMinimize = () => getWin()?.minimize()

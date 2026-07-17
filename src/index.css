@@ -75,12 +75,12 @@ html, body, #root {
   --popover-foreground: #e8cfa7;
   --muted: #3a3028;
   --muted-foreground: #c5996c;
-  --border: #5c4f3e;
+  --border: #6b5c4a;
   --input: #3a3028;
   --success: #4a7a4a;
   --success-foreground: #ffffff;
   --link: #c5996c;
-  --warning: #8a7a30;
+  --warning: #6b5a20;
   --warning-foreground: #ffffff;
-  --default-inner-border-color: #5c4f3e;
+  --default-inner-border-color: #6b5c4a;
 }
