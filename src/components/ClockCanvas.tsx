@@ -393,13 +393,27 @@ export default function ClockCanvas({
       const hovered = dayBlocks.find((b) => blockContains(b, hour))
       if (hovered) {
         const activity = getActivity(hovered.activityId)
-        const label = activity?.name ?? hovered.customLabel ?? ''
+        const blockInfections = infections.filter(
+          (inf) =>
+            inf.blockActivityId === hovered.activityId &&
+            inf.blockStartHour === hovered.startHour &&
+            inf.blockEndHour === hovered.endHour &&
+            inf.blockCustomLabel === hovered.customLabel
+        )
+        let label = activity?.name ?? hovered.customLabel ?? ''
+        if (blockInfections.length > 0) {
+          const infNames = blockInfections.map((inf) => {
+            const a = activities.find((act) => act.id === inf.activityId)
+            return `${a?.name ?? '?'} (${inf.percentage}%)`
+          })
+          label += ' | ' + infNames.join(', ')
+        }
         setTooltip(label ? { label, x: e.clientX - rect.left, y: e.clientY - rect.top - 20 } : null)
       } else {
         setTooltip(null)
       }
     },
-    [dragging, getHourFromEvent, dayBlocks, getActivity]
+    [dragging, getHourFromEvent, dayBlocks, getActivity, infections, activities]
   )
 
   const handleMouseUp = useCallback(() => {
