@@ -243,8 +243,13 @@ export default function ClockCanvas({
       ctx.font = '10px "Press Start 2P", monospace'
       ctx.textAlign = 'center'
       ctx.textBaseline = 'middle'
+      const txt = String(i)
+      for (const [dx, dy] of [[-1,-1],[-1,1],[1,-1],[1,1]]) {
+        ctx.fillStyle = '#3a3028'
+        ctx.fillText(txt, lx + dx, ly + dy)
+      }
       ctx.fillStyle = '#ffffff'
-      ctx.fillText(String(i), lx, ly)
+      ctx.fillText(txt, lx, ly)
     }
 
     // Draw clock hands
