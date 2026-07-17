@@ -14,8 +14,8 @@ function Toast(props: ToastProps) {
   const { title } = props;
 
   return (
-    <div className="flex items-center shadow-(--pixel-box-shadow) box-shadow-margin bg-background w-full md:max-w-[364px] p-4">
-      <p className="text-sm text-foreground pixel-font">{title}</p>
+    <div className="flex items-center shadow-(--pixel-box-shadow) box-shadow-margin bg-white w-full md:max-w-[364px] p-4">
+      <p className="text-sm text-[#3a3028] pixel-font">{title}</p>
     </div>
   );
 }
