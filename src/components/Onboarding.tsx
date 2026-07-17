@@ -15,6 +15,7 @@ const STEPS = [
   { title: 'Schedule Blocks', text: 'Drag on the clock to create time blocks for an activity.' },
   { title: 'Edit & Manage', text: 'Click a block to select it, then edit or delete it in the Editor tab.' },
   { title: 'Export & Save', text: 'Your schedule saves automatically. Use Export to back it up.' },
+  { title: 'Keyboard Shortcuts', text: 'Esc: Deselect block · Ctrl+E: Toggle edit/view · Ctrl+S: Export' },
 ]
 
 interface Props {

@@ -47,6 +47,7 @@ export default function App() {
   const [showOnboarding, setShowOnboarding] = useState(() => {
     return !localStorage.getItem('tickpix-onboarding-done')
   })
+  const [helpOpen, setHelpOpen] = useState(false)
   const resizing = useRef(false)
 
   const handleCreateBlock = (startHour: number, endHour: number) => {
@@ -81,11 +82,6 @@ export default function App() {
     window.addEventListener('mouseup', handleMouseUp)
   }, [])
 
-  const handleOnboardingClose = useCallback(() => {
-    setShowOnboarding(false)
-    localStorage.setItem('tickpix-onboarding-done', 'true')
-  }, [])
-
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
@@ -111,7 +107,7 @@ export default function App() {
   return (
     <div className="h-screen w-screen flex flex-col bg-[#a4c263] overflow-hidden select-none pixel-font relative">
       <Toaster position="top-right" />
-      <TitleBar />
+      <TitleBar onHelp={() => setHelpOpen(true)} />
 
       <div className="flex-1 flex overflow-hidden min-h-0">
         {store.viewMode === 'edit' && (
@@ -258,7 +254,7 @@ export default function App() {
         </div>
       </div>
 
-      <Onboarding open={showOnboarding} onClose={handleOnboardingClose} />
+      <Onboarding open={showOnboarding || helpOpen} onClose={() => { setShowOnboarding(false); setHelpOpen(false); localStorage.setItem('tickpix-onboarding-done', 'true') }} />
 
       <div
         className="absolute bottom-0 right-0 w-6 h-6 cursor-se-resize"

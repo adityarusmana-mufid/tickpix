@@ -9,7 +9,11 @@ function getWin() {
   return win
 }
 
-export default function TitleBar() {
+interface TitleBarProps {
+  onHelp?: () => void
+}
+
+export default function TitleBar({ onHelp }: TitleBarProps) {
   const [dark, setDark] = useState(() => {
     const saved = localStorage.getItem('tickpix-theme')
     if (saved) document.documentElement.classList.toggle('dark', saved === 'dark')
@@ -45,6 +49,12 @@ export default function TitleBar() {
         </span>
       </div>
       <div className="flex shrink-0">
+        <button
+          className="px-3 h-10 text-sm text-[#3a3028] hover:bg-[#c5996c] border-l-2 border-[#835a4d] font-pixel"
+          onClick={onHelp}
+        >
+          ?
+        </button>
         <button
           className="px-3 h-10 text-sm text-[#3a3028] hover:bg-[#c5996c] border-l-2 border-[#835a4d] font-pixel"
           onClick={handleMinimize}
