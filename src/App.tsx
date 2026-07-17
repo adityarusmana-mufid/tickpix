@@ -160,7 +160,7 @@ export default function App() {
                   setExported(true)
                   setTimeout(() => setExported(false), 1500)
                 } catch {
-                  toast('Export cancelled or failed')
+                  toast('Export failed')
                 }
               }}
             >
