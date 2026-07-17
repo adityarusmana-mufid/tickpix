@@ -1,5 +1,7 @@
 import { useState, useCallback, useRef } from 'react'
 import { getCurrentWindow } from '@tauri-apps/api/window'
+import { save } from '@tauri-apps/plugin-dialog'
+import { writeTextFile } from '@tauri-apps/plugin-fs'
 import { useStore } from './hooks/useStore'
 import TitleBar from './components/TitleBar'
 import ClockCanvas from './components/ClockCanvas'
@@ -146,17 +148,20 @@ export default function App() {
             <Button
               variant="secondary"
               size="sm"
-              onClick={() => {
-                const blob = new Blob([JSON.stringify(store, null, 2)], { type: 'application/json' })
-                const url = URL.createObjectURL(blob)
-                const a = document.createElement('a')
-                a.href = url
-                a.download = 'tickpix-schedule.json'
-                a.click()
-                URL.revokeObjectURL(url)
-                toast('Schedule exported')
-                setExported(true)
-                setTimeout(() => setExported(false), 1500)
+              onClick={async () => {
+                try {
+                  const path = await save({
+                    filters: [{ name: 'JSON', extensions: ['json'] }],
+                    defaultPath: 'tickpix-schedule.json',
+                  })
+                  if (!path) return
+                  await writeTextFile(path, JSON.stringify(store, null, 2))
+                  toast('Schedule exported')
+                  setExported(true)
+                  setTimeout(() => setExported(false), 1500)
+                } catch {
+                  toast('Export cancelled or failed')
+                }
               }}
             >
               {exported ? 'EXPORTED!' : 'EXPORT JSON'}

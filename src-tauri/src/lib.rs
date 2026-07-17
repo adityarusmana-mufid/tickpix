@@ -19,6 +19,8 @@ fn close_window(window: tauri::Window) {
 
 pub fn run() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_dialog::init())
+        .plugin(tauri_plugin_fs::init())
         .invoke_handler(tauri::generate_handler![toggle_maximize, minimize_window, close_window])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
