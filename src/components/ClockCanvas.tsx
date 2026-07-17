@@ -308,7 +308,6 @@ export default function ClockCanvas({
 
   const handleMouseMove = useCallback(
     (e: React.MouseEvent<HTMLCanvasElement>) => {
-      if (viewMode === 'view') return
       if (dragging) {
         const hour = getHourFromEvent(e)
         if (hour !== null) setDragCurrent(hour)
