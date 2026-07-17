@@ -68,7 +68,7 @@ export default function ActivityPanel({
             title={t.label}
             className={`flex-1 min-w-0 rounded-none border-r-2 border-[#835a4d] last:border-r-0 text-[10px] px-1.5 h-8 truncate flex items-center justify-center ${tab === i ? '!bg-[#ddb88b] !text-[#3a3028]' : '!text-[#3a3028]'}`}
           >
-            <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current shrink-0">
+            <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current shrink-0" stroke="currentColor" strokeWidth="1.5">
               <path d={t.icon} />
             </svg>
           </Button>
