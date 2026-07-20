@@ -39,9 +39,9 @@ export default function App() {
     updateMission,
     addGoal,
     removeGoal,
-    addInfection,
-    updateInfection,
-    removeInfection,
+    addBleed,
+    updateBleed,
+    removeBleed,
     setStore,
   } = useStore()
 
@@ -121,7 +121,7 @@ export default function App() {
             style={{ width: panelWidth }}
             activities={store.activities}
             blocks={store.blocks}
-            infections={store.infections}
+            bleeds={store.bleeds}
             goals={store.goals}
             mission={store.mission}
             selectedDayIndexes={store.selectedDayIndexes}
@@ -135,9 +135,9 @@ export default function App() {
             onUpdateMission={updateMission}
             onAddGoal={addGoal}
             onRemoveGoal={removeGoal}
-            onAddInfection={addInfection}
-            onUpdateInfection={updateInfection}
-            onRemoveInfection={removeInfection}
+            onAddBleed={addBleed}
+            onUpdateBleed={updateBleed}
+            onRemoveBleed={removeBleed}
           />
         )}
 
@@ -152,7 +152,7 @@ export default function App() {
           <ClockCanvas
             blocks={store.blocks}
             activities={store.activities}
-            infections={store.infections}
+            bleeds={store.bleeds}
             selectedDayIndexes={store.selectedDayIndexes}
             selectedBlockId={store.selectedBlockId}
             onSelectBlock={handleSelectBlock}

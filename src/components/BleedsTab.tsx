@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import type { Block, Activity, Infection } from '../types'
+import type { Block, Activity, Bleed } from '../types'
 import { Button } from '@/components/ui/pixelact-ui/button'
 import {
   Select,
@@ -12,10 +12,10 @@ import {
 interface Props {
   blocks: Block[]
   activities: Activity[]
-  infections: Infection[]
-  onAddInfection: (infection: Omit<Infection, 'id'>) => void
-  onUpdateInfection: (id: string, updates: Partial<Infection>) => void
-  onRemoveInfection: (id: string) => void
+  bleeds: Bleed[]
+  onAddBleed: (bleed: Omit<Bleed, 'id'>) => void
+  onUpdateBleed: (id: string, updates: Partial<Bleed>) => void
+  onRemoveBleed: (id: string) => void
 }
 
 function signatureKey(b: Block): string {
@@ -28,7 +28,7 @@ function signatureLabel(b: Block, activities: Activity[]): string {
   return `${name} (${b.startHour}–${b.endHour})`
 }
 
-export default function InfectionsTab({ blocks, activities, infections, onAddInfection, onUpdateInfection, onRemoveInfection }: Props) {
+export default function BleedsTab({ blocks, activities, bleeds, onAddBleed, onUpdateBleed, onRemoveBleed }: Props) {
   const sigs = blocks.reduce<Block[]>((acc, b) => {
     if (!acc.some((x) => signatureKey(x) === signatureKey(b))) acc.push(b)
     return acc
@@ -43,7 +43,7 @@ export default function InfectionsTab({ blocks, activities, infections, onAddInf
     const sig = sigs.find((b) => signatureKey(b) === selSig)
     if (!sig) return
     if (!selAct && !customName.trim()) return
-    onAddInfection({
+    onAddBleed({
       activityId: selAct || null,
       customName: customName.trim() || null,
       blockActivityId: sig.activityId,
@@ -58,7 +58,7 @@ export default function InfectionsTab({ blocks, activities, infections, onAddInf
   return (
     <div className="p-3 flex flex-col gap-4">
       <div>
-        <span className="block text-xs font-pixel text-[#3a3028] mb-1">Add Infection</span>
+        <span className="block text-xs font-pixel text-[#3a3028] mb-1">Add Bleed</span>
         <div className="flex flex-col gap-1.5">
           <Select value={selSig} onValueChange={setSelSig}>
             <SelectTrigger className="text-xs font-pixel">
@@ -82,7 +82,7 @@ export default function InfectionsTab({ blocks, activities, infections, onAddInf
           </Select>
           <input
             className="w-full px-2 py-1 text-xs bg-[#c5996c] border-2 border-[#835a4d] text-[#3a3028] font-pixel outline-none placeholder:text-[#3a3028]/60"
-            placeholder="Custom infection name..."
+            placeholder="Custom bleed name..."
             value={customName}
             onChange={(e) => setCustomName(e.target.value)}
           />
@@ -97,46 +97,46 @@ export default function InfectionsTab({ blocks, activities, infections, onAddInf
             />
             <span className="text-xs font-pixel text-[#3a3028] w-8 text-right">{pct}%</span>
           </div>
-          <Button variant="default" size="sm" onClick={handleAdd} disabled={!selSig || !selAct}>
+          <Button variant="default" size="sm" onClick={handleAdd} disabled={!selSig || (!selAct && !customName.trim())}>
             Add
           </Button>
         </div>
       </div>
 
       <div>
-        <span className="block text-xs font-pixel text-[#3a3028] mb-1">Configured Infections</span>
-        {infections.length === 0 && (
-          <div className="text-xs font-pixel text-[#3a3028]">No infections configured.</div>
+        <span className="block text-xs font-pixel text-[#3a3028] mb-1">Configured Bleeds</span>
+        {bleeds.length === 0 && (
+          <div className="text-xs font-pixel text-[#3a3028]">No bleeds configured.</div>
         )}
         <div className="space-y-1">
-          {infections.map((inf) => {
+          {bleeds.map((bl) => {
             const sig = sigs.find(
               (b) =>
-                b.activityId === inf.blockActivityId &&
-                b.startHour === inf.blockStartHour &&
-                b.endHour === inf.blockEndHour &&
-                b.customLabel === inf.blockCustomLabel
+                b.activityId === bl.blockActivityId &&
+                b.startHour === bl.blockStartHour &&
+                b.endHour === bl.blockEndHour &&
+                b.customLabel === bl.blockCustomLabel
             )
-            const infAct = activities.find((a) => a.id === inf.activityId)
-            const infName = inf.customName ?? infAct?.name ?? '?'
+            const blAct = activities.find((a) => a.id === bl.activityId)
+            const blName = bl.customName ?? blAct?.name ?? '?'
             return (
-              <div key={inf.id} className="w-full flex items-center gap-2 px-2 py-1.5 bg-[#c5996c] border border-[#835a4d] text-xs font-pixel text-[#3a3028]">
-                <div className="w-2 h-2 shrink-0 border border-[#835a4d]" style={{ backgroundColor: infAct?.color ?? '#835a4d' }} />
+              <div key={bl.id} className="w-full flex items-center gap-2 px-2 py-1.5 bg-[#c5996c] border border-[#835a4d] text-xs font-pixel text-[#3a3028]">
+                <div className="w-2 h-2 shrink-0 border border-[#835a4d]" style={{ backgroundColor: blAct?.color ?? '#835a4d' }} />
                 <span className="flex-1 truncate">
-                  {sig ? signatureLabel(sig, activities) : 'Unknown'} → {infName}
+                  {sig ? signatureLabel(sig, activities) : 'Unknown'} → {blName}
                 </span>
                 <input
                   type="range"
                   min={0}
                   max={100}
-                  value={inf.percentage}
-                  onChange={(e) => onUpdateInfection(inf.id, { percentage: Number(e.target.value) })}
+                  value={bl.percentage}
+                  onChange={(e) => onUpdateBleed(bl.id, { percentage: Number(e.target.value) })}
                   className="w-16"
                 />
-                <span className="w-6 text-right">{inf.percentage}%</span>
+                <span className="w-6 text-right">{bl.percentage}%</span>
                 <button
                   className="hover:opacity-70 px-1"
-                  onClick={() => onRemoveInfection(inf.id)}
+                  onClick={() => onRemoveBleed(bl.id)}
                 >
                   ×
                 </button>

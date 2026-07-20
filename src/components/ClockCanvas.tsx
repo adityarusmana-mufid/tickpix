@@ -1,11 +1,11 @@
 import { useRef, useEffect, useCallback, useState } from 'react'
-import type { Block, Activity, Infection } from '../types'
+import type { Block, Activity, Bleed } from '../types'
 import { Badge } from '@/components/ui/pixelact-ui/badge'
 
 interface Props {
   blocks: Block[]
   activities: Activity[]
-  infections: Infection[]
+  bleeds: Bleed[]
   selectedDayIndexes: number[]
   selectedBlockId: string | null
   onSelectBlock: (id: string | null) => void
@@ -150,31 +150,31 @@ function hashStr(s: string): number {
   return Math.abs(hash)
 }
 
-function drawInfectionSpots(
+function drawBleedSpots(
   ctx: CanvasRenderingContext2D,
   cx: number, cy: number,
   innerR: number, outerR: number,
   startAngle: number, endAngle: number,
   block: Block,
-  infections: Infection[],
+  bleeds: Bleed[],
   activities: Activity[],
 ) {
-  const blockInfections = infections.filter(
-    (inf) =>
-      inf.blockActivityId === block.activityId &&
-      inf.blockStartHour === block.startHour &&
-      inf.blockEndHour === block.endHour &&
-      inf.blockCustomLabel === block.customLabel
+  const blockBleeds = bleeds.filter(
+    (bl) =>
+      bl.blockActivityId === block.activityId &&
+      bl.blockStartHour === block.startHour &&
+      bl.blockEndHour === block.endHour &&
+      bl.blockCustomLabel === block.customLabel
   )
-  if (blockInfections.length === 0) return
+  if (blockBleeds.length === 0) return
 
   const minX = snap(cx - outerR - PS)
   const maxX = snap(cx + outerR + PS)
   const minY = snap(cy - outerR - PS)
   const maxY = snap(cy + outerR + PS)
 
-  for (const bf of blockInfections) {
-    if (bf.activityId && !activities.some((a) => a.id === bf.activityId)) continue
+  for (const bl of blockBleeds) {
+    if (bl.activityId && !activities.some((a) => a.id === bl.activityId)) continue
 
     for (let x = minX; x <= maxX; x += PS) {
       for (let y = minY; y <= maxY; y += PS) {
@@ -196,8 +196,8 @@ function drawInfectionSpots(
         if (!inside) continue
 
         const sig = block.activityId + '|' + block.startHour + '|' + block.endHour + '|' + (block.customLabel ?? '')
-        const seed = hashStr(sig + bf.id + String(x) + String(y))
-        if ((seed % 100) < bf.percentage) {
+        const seed = hashStr(sig + bl.id + String(x) + String(y))
+        if ((seed % 100) < bl.percentage) {
           ctx.fillStyle = '#ffffff'
           ctx.fillRect(x, y, PS, PS)
         }
@@ -209,7 +209,7 @@ function drawInfectionSpots(
 export default function ClockCanvas({
   blocks,
   activities,
-  infections,
+  bleeds,
   selectedDayIndexes,
   selectedBlockId,
   onSelectBlock,
@@ -279,7 +279,7 @@ export default function ClockCanvas({
         ctx, cx, cy, sliceInnerR, outerR, sAng, eAng,
         color + (isSelected ? 'cc' : '99')
       )
-      drawInfectionSpots(ctx, cx, cy, sliceInnerR, outerR, sAng, eAng, block, infections, activities)
+      drawBleedSpots(ctx, cx, cy, sliceInnerR, outerR, sAng, eAng, block, bleeds, activities)
     }
 
     // Draw drag preview (pizza slice)
@@ -334,7 +334,7 @@ export default function ClockCanvas({
     // Center cap
     ctx.fillStyle = '#3a3028'
     ctx.fillRect(cx - PS, cy - PS, PS * 2, PS * 2)
-  }, [dayBlocks, selectedBlockId, getActivity, infections, dragging, dragStart, dragCurrent, now])
+  }, [dayBlocks, selectedBlockId, getActivity, bleeds, dragging, dragStart, dragCurrent, now])
 
   const getHourFromEvent = useCallback(
     (e: React.MouseEvent<HTMLCanvasElement>): number | null => {
@@ -392,28 +392,28 @@ export default function ClockCanvas({
       const hovered = dayBlocks.find((b) => blockContains(b, hour))
       if (hovered) {
         const activity = getActivity(hovered.activityId)
-        const blockInfections = infections.filter(
-          (inf) =>
-            inf.blockActivityId === hovered.activityId &&
-            inf.blockStartHour === hovered.startHour &&
-            inf.blockEndHour === hovered.endHour &&
-            inf.blockCustomLabel === hovered.customLabel
+        const blockBleeds = bleeds.filter(
+          (bl) =>
+            bl.blockActivityId === hovered.activityId &&
+            bl.blockStartHour === hovered.startHour &&
+            bl.blockEndHour === hovered.endHour &&
+            bl.blockCustomLabel === hovered.customLabel
         )
         let label = activity?.name ?? hovered.customLabel ?? ''
-        if (blockInfections.length > 0) {
-          const infNames = blockInfections.map((inf) => {
-            if (inf.customName) return `${inf.customName} (${inf.percentage}%)`
-            const a = activities.find((act) => act.id === inf.activityId)
-            return `${a?.name ?? '?'} (${inf.percentage}%)`
+        if (blockBleeds.length > 0) {
+          const blNames = blockBleeds.map((bl) => {
+            if (bl.customName) return `${bl.customName} (${bl.percentage}%)`
+            const a = activities.find((act) => act.id === bl.activityId)
+            return `${a?.name ?? '?'} (${bl.percentage}%)`
           })
-          label += ' | ' + infNames.join(', ')
+          label += ' | ' + blNames.join(', ')
         }
         setTooltip(label ? { label, x: e.clientX - rect.left, y: e.clientY - rect.top - 20 } : null)
       } else {
         setTooltip(null)
       }
     },
-    [dragging, getHourFromEvent, dayBlocks, getActivity, infections, activities]
+    [dragging, getHourFromEvent, dayBlocks, getActivity, bleeds, activities]
   )
 
   const handleMouseUp = useCallback(() => {

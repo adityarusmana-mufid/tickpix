@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from 'react'
-import type { Block, Infection } from '../types'
+import type { Block, Bleed } from '../types'
 import { toast } from '@/components/ui/pixelact-ui/toast'
 import {
   createDefaultStore,
@@ -15,9 +15,9 @@ import {
   updateMission,
   addGoal,
   removeGoal,
-  addInfection,
-  removeInfection,
-  updateInfection,
+  addBleed,
+  removeBleed,
+  updateBleed,
 } from '../lib/store'
 
 export function useStore() {
@@ -100,19 +100,19 @@ export function useStore() {
     toast('Goal removed')
   }, [])
 
-  const handleAddInfection = useCallback((infection: Omit<Infection, 'id'>) => {
-    setStore((s) => addInfection(s, infection))
-    toast('Infection added')
+  const handleAddBleed = useCallback((bleed: Omit<Bleed, 'id'>) => {
+    setStore((s) => addBleed(s, bleed))
+    toast('Bleed added')
   }, [])
 
-  const handleUpdateInfection = useCallback((id: string, updates: Partial<Infection>) => {
-    setStore((s) => updateInfection(s, id, updates))
-    toast('Infection updated')
+  const handleUpdateBleed = useCallback((id: string, updates: Partial<Bleed>) => {
+    setStore((s) => updateBleed(s, id, updates))
+    toast('Bleed updated')
   }, [])
 
-  const handleRemoveInfection = useCallback((id: string) => {
-    setStore((s) => removeInfection(s, id))
-    toast('Infection removed')
+  const handleRemoveBleed = useCallback((id: string) => {
+    setStore((s) => removeBleed(s, id))
+    toast('Bleed removed')
   }, [])
 
   return {
@@ -130,8 +130,8 @@ export function useStore() {
     updateMission: handleUpdateMission,
     addGoal: handleAddGoal,
     removeGoal: handleRemoveGoal,
-    addInfection: handleAddInfection,
-    updateInfection: handleUpdateInfection,
-    removeInfection: handleRemoveInfection,
+    addBleed: handleAddBleed,
+    updateBleed: handleUpdateBleed,
+    removeBleed: handleRemoveBleed,
   }
 }

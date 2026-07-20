@@ -4,7 +4,7 @@ export interface Activity {
   color: string
 }
 
-export interface Infection {
+export interface Bleed {
   id: string
   activityId: string | null
   customName: string | null
@@ -32,7 +32,7 @@ export interface Block {
 export interface Store {
   version?: number
   activities: Activity[]
-  infections: Infection[]
+  bleeds: Bleed[]
   goals: Goal[]
   mission: string
   blocks: Block[]

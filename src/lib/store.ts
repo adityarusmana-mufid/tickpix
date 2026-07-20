@@ -1,4 +1,4 @@
-import type { Store, Activity, Block, Goal, Infection } from '../types'
+import type { Store, Activity, Block, Goal, Bleed } from '../types'
 
 const STORAGE_KEY = 'tickpix-store'
 
@@ -16,9 +16,9 @@ function newId(): string {
 
 export function createDefaultStore(): Store {
   return {
-    version: 4,
+    version: 5,
     activities: [...defaultActivities],
-    infections: [],
+    bleeds: [],
     goals: [],
     mission: '',
     blocks: [],
@@ -50,11 +50,17 @@ function migrateStore(s: Store): Store {
     v = 3
   }
   if (v < 4) {
-    store = {
-      ...store,
-      version: 4,
-      infections: [],
-    }
+    const s = store as unknown as Record<string, unknown>
+    s.infections = []
+    s.version = 4
+    v = 4
+  }
+  if (v < 5) {
+    const s = store as unknown as Record<string, unknown>
+    const old = Array.isArray(s.infections) ? s.infections : []
+    delete s.infections
+    s.bleeds = old
+    s.version = 5
   }
   return store
 }
@@ -170,16 +176,16 @@ export function removeGoal(store: Store, id: string): Store {
   return { ...store, goals: store.goals.filter((g) => g.id !== id) }
 }
 
-export function addInfection(store: Store, infection: Omit<Infection, 'id'>): Store {
-  return { ...store, infections: [...store.infections, { id: newId(), ...infection }] }
+export function addBleed(store: Store, bleed: Omit<Bleed, 'id'>): Store {
+  return { ...store, bleeds: [...store.bleeds, { id: newId(), ...bleed }] }
 }
 
-export function removeInfection(store: Store, id: string): Store {
-  return { ...store, infections: store.infections.filter((i) => i.id !== id) }
+export function removeBleed(store: Store, id: string): Store {
+  return { ...store, bleeds: store.bleeds.filter((b) => b.id !== id) }
 }
 
-export function updateInfection(store: Store, id: string, updates: Partial<Infection>): Store {
-  return { ...store, infections: store.infections.map((i) => (i.id === id ? { ...i, ...updates } : i)) }
+export function updateBleed(store: Store, id: string, updates: Partial<Bleed>): Store {
+  return { ...store, bleeds: store.bleeds.map((b) => (b.id === id ? { ...b, ...updates } : b)) }
 }
 
 export function replaceStore(raw: unknown): Store {
