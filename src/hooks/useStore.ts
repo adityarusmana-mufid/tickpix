@@ -8,10 +8,8 @@ import {
   addActivity,
   removeActivity,
   addBlockToDays,
-  updateBlock,
-  updateBlockInDays,
-  removeBlock,
-  removeBlockInDays,
+  updateBlockBySignature,
+  removeBlockBySignature,
   updateMission,
   addGoal,
   removeGoal,
@@ -62,18 +60,12 @@ export function useStore() {
   )
 
   const handleUpdateBlock = useCallback((id: string, updates: Partial<Block>) => {
-    setStore((s) => {
-      if (s.selectedDayIndexes.length > 1) return updateBlockInDays(s, id, s.selectedDayIndexes, updates)
-      return updateBlock(s, id, updates)
-    })
+    setStore((s) => updateBlockBySignature(s, id, updates))
     toast('Block updated')
   }, [])
 
   const handleRemoveBlock = useCallback((id: string) => {
-    setStore((s) => {
-      if (s.selectedDayIndexes.length > 1) return removeBlockInDays(s, id, s.selectedDayIndexes)
-      return removeBlock(s, id)
-    })
+    setStore((s) => removeBlockBySignature(s, id))
     toast('Block removed')
   }, [])
 

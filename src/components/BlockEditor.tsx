@@ -157,7 +157,7 @@ export default function BlockEditor({ block, blocks, activities, selectedDayInde
 
   const siblingDays = [...new Set(
     blocks
-      .filter((b) => b.startHour === block.startHour && b.endHour === block.endHour && b.activityId === block.activityId)
+      .filter((b) => b.startHour === block.startHour && b.endHour === block.endHour && b.activityId === block.activityId && b.customLabel === block.customLabel)
       .map((b) => b.dayOfWeek)
   )]
 

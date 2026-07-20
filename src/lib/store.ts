@@ -125,13 +125,18 @@ export function updateBlock(store: Store, id: string, updates: Partial<Block>): 
   }
 }
 
-export function updateBlockInDays(store: Store, id: string, dayIndexes: number[], updates: Partial<Block>): Store {
+export function updateBlockBySignature(store: Store, id: string, updates: Partial<Block>): Store {
   const block = store.blocks.find((b) => b.id === id)
   if (!block) return store
   return {
     ...store,
     blocks: store.blocks.map((b) =>
-      b.id === id || (dayIndexes.includes(b.dayOfWeek) && b.startHour === block.startHour && b.endHour === block.endHour)
+      b.id === id || (
+        b.activityId === block.activityId &&
+        b.startHour === block.startHour &&
+        b.endHour === block.endHour &&
+        b.customLabel === block.customLabel
+      )
         ? { ...b, ...updates }
         : b
     ),
@@ -146,14 +151,19 @@ export function removeBlock(store: Store, id: string): Store {
   }
 }
 
-export function removeBlockInDays(store: Store, id: string, dayIndexes: number[]): Store {
+export function removeBlockBySignature(store: Store, id: string): Store {
   const block = store.blocks.find((b) => b.id === id)
   if (!block) return store
   return {
     ...store,
     blocks: store.blocks.filter((b) => {
       if (b.id === id) return false
-      if (dayIndexes.includes(b.dayOfWeek) && b.startHour === block.startHour && b.endHour === block.endHour) return false
+      if (
+        b.activityId === block.activityId &&
+        b.startHour === block.startHour &&
+        b.endHour === block.endHour &&
+        b.customLabel === block.customLabel
+      ) return false
       return true
     }),
     selectedBlockId: store.selectedBlockId === id ? null : store.selectedBlockId,
